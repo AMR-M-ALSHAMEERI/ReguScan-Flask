@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR/CCPA Compliance Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-shield-alt"></i> Automated GDPR/CCPA Compliance Scanner</h1>
+            <p class="subtitle">Scan your text for PII patterns and compliance keywords</p>
+        </header>
+        
+        <main>
+            <div class="form-section">
+                <form action="/scan" method="POST" id="scanForm">
+                    <div class="form-group">
+                        <label for="text">Enter Text to Scan:</label>
+                        <textarea 
+                            name="text" 
+                            id="text" 
+                            rows="20" 
+                            placeholder="Paste your privacy policy, data processing agreement, or any text you want to scan for GDPR/CCPA compliance...&#10;&#10;Example text:&#10;- Email: john.doe@example.com&#10;- SSN: 123-45-6789&#10;- Credit Card: 4532 1234 5678 9010&#10;- Privacy Notice and Right to Access&#10;- Data Breach Notification procedures"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-search"></i> Scan Text for Compliance
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="clearForm()">
+                            <i class="fas fa-trash-alt"></i> Clear
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="info-box">
+                    <h3><i class="fas fa-clipboard-list"></i> What This Tool Scans For:</h3>
+                    <ul>
+                        <li><strong>PII Risk Patterns:</strong> Email addresses, credit cards, SSN, IP addresses, phone numbers</li>
+                        <li><strong>Compliance Keywords:</strong> GDPR/CCPA required clauses like "Right to be Forgotten", "Data Breach Notification", etc.</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; <span id="currentYear"></span> GDPR/CCPA Compliance Scanner | For Educational Purposes</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Set dynamic copyright year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        function clearForm() {
+            document.getElementById('text').value = '';
+        }
+        
+        // Add loading state when form is submitted
+        document.getElementById('scanForm').addEventListener('submit', function() {
+            const button = this.querySelector('.btn-primary');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
+            button.disabled = true;
+        });
+    </script>
+</body>
+</html>

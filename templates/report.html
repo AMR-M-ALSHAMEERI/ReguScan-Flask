@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Scan Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-bar"></i> Compliance Scan Results</h1>
+            <p class="subtitle">Analysis complete - Review your findings below</p>
+            <div class="print-only print-metadata">
+                <p><strong>Report Generated:</strong> <span id="reportDate"></span></p>
+                <p><strong>Document Type:</strong> GDPR/CCPA Compliance Analysis</p>
+            </div>
+        </header>
+        
+        <main>
+            <div class="summary-section">
+                <div class="summary-card risk-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> PII Risk Findings</h3>
+                    <p class="summary-number">{{ total_risks }}</p>
+                    <p class="summary-label">patterns detected</p>
+                </div>
+                
+                <div class="summary-card compliance-card">
+                    <h3><i class="fas fa-check-circle"></i> Compliance Keywords</h3>
+                    <p class="summary-number">{{ compliance_status|length }}</p>
+                    <p class="summary-label">categories scanned</p>
+                </div>
+            </div>
+            
+            <section class="results-section risk-section">
+                <h2><i class="fas fa-times-circle"></i> Section 1: PII Risk Findings</h2>
+                
+                {% if risk_findings %}
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Risk Level</th>
+                                <th>PII Type</th>
+                                <th>Line Number</th>
+                                <th>Matched Pattern</th>
+                                <th>Code Snippet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for finding in risk_findings %}
+                            <tr class="risk-{{ finding.risk_level|lower }}">
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <span class="badge badge-{{ finding.risk_level|lower }}">
+                                        {{ finding.risk_level }}
+                                    </span>
+                                </td>
+                                <td>{{ finding.type }}</td>
+                                <td>{{ finding.line_number }}</td>
+                                <td class="matched-text">{{ finding.matched_text }}</td>
+                                <td class="snippet">{{ finding.snippet }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p><i class="fas fa-check-circle"></i> No PII patterns detected in the scanned text.</p>
+                </div>
+                {% endif %}
+            </section>
+            
+            <section class="results-section compliance-section">
+                <h2><i class="fas fa-check-double"></i> Section 2: Compliance Keyword Status</h2>
+                
+                <div class="compliance-grid">
+                    {% for category_data in compliance_status %}
+                    <div class="compliance-category">
+                        <h3>
+                            {% if category_data.has_any %}
+                                <span class="status-icon success"><i class="fas fa-check"></i></span>
+                            {% else %}
+                                <span class="status-icon warning"><i class="fas fa-times"></i></span>
+                            {% endif %}
+                            {{ category_data.category }}
+                        </h3>
+                        
+                        {% if category_data.found %}
+                        <div class="keyword-section">
+                            <h4 class="found-header">Found Keywords:</h4>
+                            <ul class="keyword-list found">
+                                {% for keyword in category_data.found %}
+                                <li>
+                                    <span class="keyword-badge found"><i class="fas fa-check"></i></span>
+                                    {{ keyword }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
+                        {% if category_data.missing %}
+                        <div class="keyword-section">
+                            <h4 class="missing-header">Missing Keywords:</h4>
+                            <ul class="keyword-list missing">
+                                {% for keyword in category_data.missing %}
+                                <li>
+                                    <span class="keyword-badge missing"><i class="fas fa-times"></i></span>
+                                    {{ keyword }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            
+            <div class="action-section">
+                <a href="/" class="btn-primary"><i class="fas fa-redo"></i> Scan New Text</a>
+                <button onclick="handlePrint()" class="btn-secondary" id="printBtn">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+                <button onclick="downloadPDF()" class="btn-secondary" id="pdfBtn">
+                    <i class="fas fa-file-pdf"></i> Save as PDF
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; <span id="currentYear"></span> GDPR/CCPA Compliance Scanner | For Educational Purposes</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        const now = new Date();
+        const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        document.getElementById('reportDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+        
+        function handlePrint() {
+            const printBtn = document.getElementById('printBtn');
+            const originalHTML = printBtn.innerHTML;
+            printBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+            printBtn.disabled = true;
+            setTimeout(() => { window.print(); printBtn.innerHTML = originalHTML; printBtn.disabled = false; }, 300);
+        }
+        
+        function downloadPDF() {
+            const pdfBtn = document.getElementById('pdfBtn');
+            const originalHTML = pdfBtn.innerHTML;
+            pdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening...';
+            pdfBtn.disabled = true;
+            setTimeout(() => { alert('Tip: In the print dialog, select "Save as PDF" as your destination.'); window.print(); pdfBtn.innerHTML = originalHTML; pdfBtn.disabled = false; }, 200);
+        }
+        
+        window.addEventListener('beforeprint', function() {
+            document.body.style.webkitPrintColorAdjust = 'exact';
+            document.body.style.printColorAdjust = 'exact';
+        });
+        
+        window.addEventListener('afterprint', function() {
+            console.log('Print completed or cancelled.');
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.results-table tbody tr');
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.01)'; });
+                row.addEventListener('mouseleave', function() { this.style.transform = 'scale(1)'; });
+            });
+        });
+    </script>
+</body>
+</html>
