@@ -1,0 +1,68 @@
+SAMPLE PRIVACY POLICY DOCUMENT
+For Testing GDPR/CCPA Compliance Scanner
+========================================
+
+CONTACT INFORMATION
+-------------------
+For any inquiries, please contact us at:
+Email: privacy.officer@example-company.com
+Phone: 555-123-4567
+Alternative: 555.987.6543
+
+PERSONAL DATA WE COLLECT
+-------------------------
+We may collect various types of personal information including:
+- Email addresses (e.g., customer@email.com)
+- Payment information (Credit Card: 4532-1234-5678-9010)
+- Social Security Numbers for verification (123-45-6789)
+- IP addresses for analytics (192.168.1.100)
+
+DATA RIGHTS
+-----------
+Under GDPR and CCPA, you have the following rights:
+1. Right to Access - You can request access to your personal data
+2. Right to Rectification - You can request corrections to your data
+3. Right to be Forgotten - You can request deletion of your data
+4. Right to Opt-Out - You can opt-out of data selling
+5. Data Portability - You can request your data in a portable format
+
+You may submit a Data Subject Request (DSAR) at any time through our portal.
+
+POLICY AND CONSENT
+------------------
+Our data processing is based on several Lawful Basis principles:
+- Explicit Consent for marketing communications
+- Legitimate Interest for service improvements
+- Legal obligation for tax and regulatory requirements
+
+Please review our:
+- Privacy Notice (updated quarterly)
+- Cookie Policy (for website usage)
+- Data Processing Agreement (DPA) for business clients
+
+SECURITY MEASURES
+-----------------
+We implement comprehensive Security Measures including:
+- Encryption of data at rest and in transit
+- Anonymization techniques for analytics
+- Regular security audits with Third Parties
+- Data Breach Notification procedures (within 72 hours)
+
+DATA TRANSFERS
+--------------
+International Data Transfer may occur when:
+- Using cloud services hosted in different regions
+- Sharing data with subsidiary companies
+- Engaging with Third Parties for service delivery
+
+ADDITIONAL CONTACTS
+-------------------
+Technical Support: tech@example-company.com
+Billing Inquiries: billing@example-company.com
+Payment Card Support: 4111-1111-1111-1111
+Alternative SSN Verification: 987-65-4321
+Server IP Address: 10.0.0.50
+
+========================================
+END OF TEST DOCUMENT
+Last Updated: 2025
