@@ -148,6 +148,151 @@ textarea:focus {
     cursor: not-allowed;
 }
 
+/* Error Message */
+.error-message {
+    background: #ff6b6b;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease;
+}
+
+.error-message i {
+    font-size: 1.5em;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tab Navigation */
+.input-method-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px 20px;
+    background: #f1f3f5;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.tab-btn:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.tab-btn i {
+    font-size: 1.2em;
+}
+
+/* Input Sections */
+.input-section {
+    display: none;
+}
+
+.input-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* File Upload Styles */
+.file-upload-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.file-upload-wrapper input[type="file"] {
+    display: none;
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    border: 3px dashed #ced4da;
+    border-radius: 12px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.file-label:hover {
+    border-color: #667eea;
+    background: #f1f3ff;
+}
+
+.file-label.drag-over {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f1f3ff 0%, #e3e7ff 100%);
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.file-label i {
+    font-size: 3em;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.file-label span {
+    font-size: 1.1em;
+    color: #495057;
+    font-weight: 500;
+}
+
+.file-info {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.file-info i {
+    margin-right: 5px;
+    color: #667eea;
+}
+
 .info-box {
     margin-top: 40px;
     padding: 25px;
@@ -707,6 +852,35 @@ footer {
         transform: scale(1.2);
         opacity: 1;
     }
+}
+
+/* Progress Bar Styles */
+.progress-container {
+    width: 100%;
+    max-width: 400px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 25px auto 15px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #51cf66 0%, #37b24d 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(81, 207, 102, 0.6);
+}
+
+.progress-percentage {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-top: 10px;
 }
 
 /* Responsive Design */

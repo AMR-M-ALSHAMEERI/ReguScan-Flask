@@ -1,8 +1,23 @@
 ﻿from flask import Flask, render_template, request
 import re
+import os
+from werkzeug.utils import secure_filename
+import PyPDF2
+from docx import Document
 
 
 app = Flask(__name__)
+
+# Upload configuration
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'.txt', '.pdf', '.docx'}
+MAX_FILE_SIZE = 16 * 1024 * 1024  # 16 MB
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+# Create upload folder if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 # PII Risk Patterns Dictionary
@@ -60,6 +75,58 @@ COMPLIANCE_KEYWORDS = {
 }
 
 
+def allowed_file(filename):
+    """Check if file extension is allowed."""
+    return any(filename.lower().endswith(ext) for ext in ALLOWED_EXTENSIONS)
+
+
+def extract_text_from_file(filepath, filename):
+    """Extract text from uploaded file based on extension."""
+    extension = os.path.splitext(filename.lower())[1]
+    
+    try:
+        if extension in ['.txt']:
+            # Plain text files
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return f.read()
+        
+        elif extension == '.pdf':
+            # PDF files
+            text = ""
+            with open(filepath, 'rb') as file:
+                pdf_reader = PyPDF2.PdfReader(file)
+                for page in pdf_reader.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+            return text
+        
+        elif extension == '.docx':
+            # Word documents
+            doc = Document(filepath)
+            text = ""
+            
+            # Extract paragraphs
+            for paragraph in doc.paragraphs:
+                text += paragraph.text + "\n"
+            
+            # Extract tables
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        text += cell.text + " "
+                    text += "\n"
+            
+            return text
+        
+        else:
+            return None  # Unsupported format
+            
+    except Exception as e:
+        print(f"Error extracting text from {filename}: {e}")
+        return None
+
+
 @app.route("/")
 def index():
     """Serve the main input form."""
@@ -69,8 +136,52 @@ def index():
 @app.route("/scan", methods=["POST"])
 def scan():
     """Process the text and perform PII and compliance scanning."""
-    # Get the text from the form
-    text = request.form.get("text", "")
+    text = ""
+    error_message = None
+    
+    # Check if file was uploaded
+    if 'file' in request.files and request.files['file'].filename != '':
+        file = request.files['file']
+        
+        # Validate file
+        if not allowed_file(file.filename):
+            error_message = "Invalid file type. Only .txt, .pdf, and .docx files are allowed."
+        else:
+            # Save file temporarily
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            
+            try:
+                file.save(filepath)
+                
+                # Extract text from file
+                text = extract_text_from_file(filepath, filename)
+                
+                # Clean up temporary file
+                os.remove(filepath)
+                
+                if text is None or text.strip() == "":
+                    error_message = "Could not extract text from file. Please ensure it's not empty or corrupted."
+                    
+            except Exception as e:
+                error_message = f"Error processing file: {str(e)}"
+                # Clean up file if it exists
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+    
+    else:
+        # Get text from textarea
+        text = request.form.get("text", "")
+    
+    # Check if we have text to scan
+    if not text or text.strip() == "":
+        if not error_message:
+            error_message = "Please provide text to scan or upload a file."
+        return render_template("index.html", error=error_message)
+    
+    # If there was an error during file processing, show it
+    if error_message:
+        return render_template("index.html", error=error_message)
     
     # Split text into lines for line number tracking
     lines = text.split("\n")
@@ -128,6 +239,13 @@ def scan():
                          risk_findings=risk_findings, 
                          compliance_status=compliance_status,
                          total_risks=len(risk_findings))
+
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    """Handle file too large error."""
+    return render_template("index.html", 
+                         error="File is too large! Maximum file size is 16 MB. Please upload a smaller file."), 413
 
 
 if __name__ == "__main__":

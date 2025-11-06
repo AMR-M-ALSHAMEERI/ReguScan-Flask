@@ -27,8 +27,15 @@
                 <i class="fas fa-shield-alt fa-3x"></i>
                 <div class="scan-line"></div>
             </div>
-            <h2>Scanning Document...</h2>
-            <p>Analyzing for PII patterns and compliance keywords</p>
+            <h2 id="progressTitle">Scanning Document...</h2>
+            <p id="progressStage">Initializing scan...</p>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-percentage" id="progressPercentage">0%</div>
+            
             <div class="loading-dots">
                 <span></span>
                 <span></span>
@@ -44,22 +51,65 @@
         </header>
         
         <main>
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+            </div>
+            {% endif %}
+            
             <div class="form-section">
-                <form action="/scan" method="POST" id="scanForm">
-                    <div class="form-group">
-                        <label for="text">Enter Text to Scan:</label>
-                        <textarea 
-                            name="text" 
-                            id="text" 
-                            rows="20" 
-                            placeholder="Paste your privacy policy, data processing agreement, or any text you want to scan for GDPR/CCPA compliance...&#10;&#10;Example text:&#10;- Email: john.doe@example.com&#10;- SSN: 123-45-6789&#10;- Credit Card: 4532 1234 5678 9010&#10;- Privacy Notice and Right to Access&#10;- Data Breach Notification procedures"
-                            required
-                        ></textarea>
+                <form action="/scan" method="POST" id="scanForm" enctype="multipart/form-data">
+                    
+                    <!-- Upload or Paste Options -->
+                    <div class="input-method-tabs">
+                        <button type="button" class="tab-btn active" onclick="switchTab('paste')">
+                            <i class="fas fa-keyboard"></i> Paste Text
+                        </button>
+                        <button type="button" class="tab-btn" onclick="switchTab('upload')">
+                            <i class="fas fa-upload"></i> Upload File
+                        </button>
+                    </div>
+
+                    <!-- Paste Text Section -->
+                    <div id="pasteSection" class="input-section active">
+                        <div class="form-group">
+                            <label for="text">Enter Text to Scan:</label>
+                            <textarea 
+                                name="text" 
+                                id="text" 
+                                rows="20" 
+                                placeholder="Paste your privacy policy, data processing agreement, or any text you want to scan for GDPR/CCPA compliance...&#10;&#10;Example text:&#10;- Email: john.doe@example.com&#10;- SSN: 123-45-6789&#10;- Credit Card: 4532 1234 5678 9010&#10;- Privacy Notice and Right to Access&#10;- Data Breach Notification procedures"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Upload File Section -->
+                    <div id="uploadSection" class="input-section">
+                        <div class="form-group">
+                            <label for="file">Upload Document:</label>
+                            <div class="file-upload-wrapper">
+                                <input 
+                                    type="file" 
+                                    name="file" 
+                                    id="file" 
+                                    accept=".txt,.pdf,.docx"
+                                    onchange="displayFileName()"
+                                >
+                                <label for="file" class="file-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span id="fileName">Choose a file or drag & drop</span>
+                                </label>
+                            </div>
+                            <p class="file-info">
+                                <i class="fas fa-info-circle"></i> 
+                                Accepted: <strong>.txt, .pdf, .docx</strong> | Max size: <strong>16 MB</strong>
+                            </p>
+                        </div>
                     </div>
                     
                     <div class="button-group">
                         <button type="submit" class="btn-primary">
-                            <i class="fas fa-search"></i> Scan Text for Compliance
+                            <i class="fas fa-search"></i> Scan Document
                         </button>
                         <button type="button" class="btn-secondary" onclick="clearForm()">
                             <i class="fas fa-trash-alt"></i> Clear
@@ -97,14 +147,149 @@
         // Set dynamic copyright year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
         
-        function clearForm() {
-            document.getElementById('text').value = '';
+        // Tab switching between paste and upload
+        function switchTab(method) {
+            const pasteSection = document.getElementById('pasteSection');
+            const uploadSection = document.getElementById('uploadSection');
+            const tabs = document.querySelectorAll('.tab-btn');
+            
+            if (method === 'paste') {
+                pasteSection.classList.add('active');
+                uploadSection.classList.remove('active');
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+                // Clear file input
+                document.getElementById('file').value = '';
+                document.getElementById('fileName').textContent = 'Choose a file or drag & drop';
+            } else {
+                uploadSection.classList.add('active');
+                pasteSection.classList.remove('active');
+                tabs[1].classList.add('active');
+                tabs[0].classList.remove('active');
+                // Clear textarea
+                document.getElementById('text').value = '';
+            }
         }
         
-        // Show scanning preloader when form is submitted
-        document.getElementById('scanForm').addEventListener('submit', function() {
+        // Display selected file name
+        function displayFileName() {
+            const fileInput = document.getElementById('file');
+            const fileName = document.getElementById('fileName');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
+                fileName.innerHTML = `<i class="fas fa-file-alt"></i> ${file.name} (${fileSize} MB)`;
+            } else {
+                fileName.textContent = 'Choose a file or drag & drop';
+            }
+        }
+        
+        // ===== DRAG & DROP FUNCTIONALITY =====
+        const fileLabel = document.querySelector('.file-label');
+        const fileInput = document.getElementById('file');
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight(e) {
+            fileLabel.classList.add('drag-over');
+        }
+        
+        function unhighlight(e) {
+            fileLabel.classList.remove('drag-over');
+        }
+        
+        // Handle dropped files
+        fileLabel.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                displayFileName();
+            }
+        }
+        
+        // ===== PROGRESS STAGES =====
+        function updateProgress(percentage, title, stage) {
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            document.getElementById('progressTitle').textContent = title;
+            document.getElementById('progressStage').textContent = stage;
+        }
+        
+        function simulateProgress(isFileUpload) {
+            let progress = 0;
+            const stages = isFileUpload ? [
+                { percent: 15, title: 'Uploading file...', stage: 'Transferring document to server' },
+                { percent: 35, title: 'Extracting text...', stage: 'Reading document content' },
+                { percent: 60, title: 'Scanning for PII...', stage: 'Detecting sensitive information patterns' },
+                { percent: 80, title: 'Checking compliance...', stage: 'Analyzing GDPR/CCPA keywords' },
+                { percent: 95, title: 'Generating report...', stage: 'Compiling scan results' }
+            ] : [
+                { percent: 30, title: 'Scanning for PII...', stage: 'Detecting sensitive information patterns' },
+                { percent: 65, title: 'Checking compliance...', stage: 'Analyzing GDPR/CCPA keywords' },
+                { percent: 95, title: 'Generating report...', stage: 'Compiling scan results' }
+            ];
+            
+            let currentStage = 0;
+            const interval = setInterval(() => {
+                if (currentStage < stages.length) {
+                    const stage = stages[currentStage];
+                    updateProgress(stage.percent, stage.title, stage.stage);
+                    currentStage++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 800); // Update every 800ms
+        }
+        
+        function clearForm() {
+            document.getElementById('text').value = '';
+            document.getElementById('file').value = '';
+            document.getElementById('fileName').textContent = 'Choose a file or drag & drop';
+        }
+        
+        // Form validation and preloader
+        document.getElementById('scanForm').addEventListener('submit', function(e) {
+            const textValue = document.getElementById('text').value.trim();
+            const fileValue = document.getElementById('file').value;
+            
+            // Check if either text or file is provided
+            if (!textValue && !fileValue) {
+                e.preventDefault();
+                alert('Please either paste text or upload a file to scan.');
+                return false;
+            }
+            
+            // Determine if it's a file upload or text paste
+            const isFileUpload = fileValue !== '';
+            
             // Show preloader overlay
             document.getElementById('preloader').classList.add('active');
+            
+            // Start progress simulation
+            simulateProgress(isFileUpload);
             
             // Update button state
             const button = this.querySelector('.btn-primary');
