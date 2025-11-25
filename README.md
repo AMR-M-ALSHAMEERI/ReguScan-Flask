@@ -196,9 +196,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Author
+## Authors
 
 **AMR M. ALSHAMEERI**
+**OSAMAH HASAN ALREBAKI**
 
 ## Version History
 
@@ -232,4 +233,4 @@ For issues, questions, or suggestions, please open an issue on GitHub.
 
 ---
 
-*Built with ❤️ A.M ^-^*
+*Built with ❤️ A.M ^-^ & OSOS!*

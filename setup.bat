@@ -10,10 +10,18 @@ echo.
 REM Check if Python is installed
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: Python is not installed or not in PATH
-    echo Please install Python 3.7 or higher from https://www.python.org/
-    pause
-    exit /b 1
+    echo Python command not found, trying py launcher...
+    py --version >nul 2>&1
+    if errorlevel 1 (
+        echo ERROR: Python is not installed or not in PATH
+        echo Please install Python 3.8 or higher from https://www.python.org/
+        echo Make sure to check "Add Python to PATH" during installation
+        pause
+        exit /b 1
+    )
+    set PYTHON_CMD=py
+) else (
+    set PYTHON_CMD=python
 )
 
 echo [1/5] Python detected successfully
@@ -22,7 +30,7 @@ echo.
 REM Check if virtual environment exists
 if not exist "venv" (
     echo [2/5] Creating virtual environment...
-    python -m venv venv
+    %PYTHON_CMD% -m venv venv
     if errorlevel 1 (
         echo ERROR: Failed to create virtual environment
         pause
