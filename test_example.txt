@@ -1,6 +1,11 @@
 SAMPLE PRIVACY POLICY DOCUMENT
-For Testing GDPR/CCPA Compliance Scanner
+For Testing GDPR/CCPA Compliance Scanner - Version 2.0
+Enhanced with Risk Severity Detection
 ========================================
+
+REGULATORY FRAMEWORK
+-------------------
+This policy complies with GDPR (General Data Protection Regulation) and CCPA (California Consumer Privacy Act) requirements.
 
 CONTACT INFORMATION
 -------------------
@@ -9,29 +14,69 @@ Email: privacy.officer@example-company.com
 Phone: 555-123-4567
 Alternative: 555.987.6543
 
+DATA PROTECTION LEADERSHIP
+---------------------------
+Our Data Protection Officer (DPO) oversees compliance.
+Email: dpo@example-company.com
+Phone: 555-234-5678
+
 PERSONAL DATA WE COLLECT
 -------------------------
 We may collect various types of personal information including:
-- Email addresses (e.g., customer@email.com)
+- Email addresses (e.g., customer@email.com, support@company.com)
 - Payment information (Credit Card: 4532-1234-5678-9010)
-- Social Security Numbers for verification (123-45-6789)
-- IP addresses for analytics (192.168.1.100)
+- Banking details (IBAN: GB29 NWBK 6016 1331 9268 19)
+- Social Security Numbers for verification (SSN: 123-45-6789)
+- Passport Numbers for travel services (Passport: AB1234567)
+- Date of Birth: 05/15/1990
+- IP addresses for analytics (192.168.1.100, 10.0.0.50)
+- Device identifiers (MAC Address: 00:1B:44:11:3A:B7)
 
-DATA RIGHTS
------------
-Under GDPR and CCPA, you have the following rights:
+CRITICAL IDENTITY VERIFICATION DATA
+------------------------------------
+For enhanced security verification, we may collect:
+- SSN: 987-65-4321
+- Credit Card: 5412-3456-7890-1234
+- Email: verification@example.com
+- Passport Number: CD9876543
+- DOB: 12/20/1985
+
+DATA CONTROLLER AND PROCESSOR ROLES
+------------------------------------
+We act as the Controller for data we collect directly. Third-party service providers 
+act as Processors under our instruction. Some partners function as Joint Controllers 
+for specific processing activities.
+
+GDPR COMPLIANCE - DATA RIGHTS
+------------------------------
+Under GDPR, you have the following rights:
 1. Right to Access - You can request access to your personal data
 2. Right to Rectification - You can request corrections to your data
 3. Right to be Forgotten - You can request deletion of your data
-4. Right to Opt-Out - You can opt-out of data selling
-5. Data Portability - You can request your data in a portable format
+4. Data Portability - You can request your data in a portable format
 
 You may submit a Data Subject Request (DSAR) at any time through our portal.
+We will respond within 30 days of receiving your request.
 
-POLICY AND CONSENT
-------------------
+CCPA COMPLIANCE - CALIFORNIA RIGHTS
+------------------------------------
+California residents have additional rights under the California Consumer Privacy Act:
+- Right to Opt-Out of the Sale of Personal Information
+- Access our "Do Not Sell My Personal Information" page
+- Submit a Consumer Request directly or through an Authorized Agent
+- No Financial Incentive will be offered for personal data
+- Review our Notice at Collection for Categories of Personal Information we collect
+
+PRIVACY BY DESIGN AND DEFAULT
+------------------------------
+We implement Privacy by Design and Privacy by Default principles throughout 
+our data processing operations. Before implementing new systems, we conduct 
+a Data Protection Impact Assessment (DPIA) to identify and mitigate risks.
+
+LAWFUL BASIS AND CONSENT
+-------------------------
 Our data processing is based on several Lawful Basis principles:
-- Explicit Consent for marketing communications
+- Explicit Consent for marketing communications (with Consent Withdrawal option)
 - Legitimate Interest for service improvements
 - Legal obligation for tax and regulatory requirements
 
@@ -40,13 +85,18 @@ Please review our:
 - Cookie Policy (for website usage)
 - Data Processing Agreement (DPA) for business clients
 
+AUTOMATED PROCESSING
+--------------------
+We do not engage in Profiling or Automated Decision-Making that produces 
+legal effects without human oversight and your Explicit Consent.
+
 SECURITY MEASURES
 -----------------
 We implement comprehensive Security Measures including:
 - Encryption of data at rest and in transit
 - Anonymization techniques for analytics
 - Regular security audits with Third Parties
-- Data Breach Notification procedures (within 72 hours)
+- Data Breach Notification procedures (within 72 hours to Supervisory Authority)
 
 DATA TRANSFERS
 --------------
@@ -55,14 +105,55 @@ International Data Transfer may occur when:
 - Sharing data with subsidiary companies
 - Engaging with Third Parties for service delivery
 
-ADDITIONAL CONTACTS
--------------------
+All transfers comply with GDPR Chapter V requirements.
+
+SUPERVISORY AUTHORITY
+----------------------
+You have the right to lodge a complaint with your local Supervisory Authority 
+if you believe your data protection rights have been violated.
+
+ADDITIONAL TEST CONTACTS
+-------------------------
 Technical Support: tech@example-company.com
 Billing Inquiries: billing@example-company.com
-Payment Card Support: 4111-1111-1111-1111
-Alternative SSN Verification: 987-65-4321
-Server IP Address: 10.0.0.50
+Customer Service: 555-111-2222
+Emergency Contact: 555-999-8888
+
+ADDITIONAL PAYMENT METHODS
+---------------------------
+Alternative Payment Card: 4111-1111-1111-1111
+Backup Account IBAN: DE89 3704 0044 0532 0130 00
+
+ADDITIONAL IDENTIFICATION
+--------------------------
+Backup SSN for verification: 111-22-3333
+Secondary DOB: 03/10/1978
+Passport: EF5432109
+Network IP: 172.16.0.100
+Device MAC: 00:1A:2B:3C:4D:5E
+
+========================================
+TEST SUMMARY
+========================================
+This document contains:
+- 9 different PII types for detection
+- GDPR regulatory framework mention
+- CCPA regulatory framework mention
+- 19 GDPR-specific compliance keywords
+- 9 CCPA-specific compliance keywords
+- Compliance timeframes (72 hours, 30 days)
+- Critical risk patterns:
+  * SSN + Credit Card combinations (Identity Theft Risk)
+  * IBAN/Credit Card + Email (Financial Fraud Risk)
+  * Passport + DOB + Email (Full Identity Profile)
+  * 30+ PII items (High Volume Data Exposure)
+
+Expected Severity Levels:
+- Critical: SSNs and Credit Cards (in dangerous combinations)
+- High: IBANs, Passports, DOBs, Emails (sensitive data)
+- Medium: IPs, Phone Numbers, MAC Addresses (lower risk)
 
 ========================================
 END OF TEST DOCUMENT
-Last Updated: 2025
+Last Updated: November 2025
+Version: 2.0 - Enhanced Risk Severity Testing
