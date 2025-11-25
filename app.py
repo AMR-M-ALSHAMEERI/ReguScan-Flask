@@ -34,6 +34,22 @@ PII_RISK_PATTERNS = {
         "pattern": r"\b\d{3}[ -]?\d{2}[ -]?\d{4}\b",
         "risk": "High"
     },
+    "Passport Number": {
+        "pattern": r"\b[A-Z]{1,2}\d{6,9}\b",
+        "risk": "High"
+    },
+    "IBAN (Bank Account)": {
+        "pattern": r"\b[A-Z]{2}\d{2}[ ]?[A-Z0-9]{4}[ ]?\d{4}[ ]?\d{4}[ ]?\d{4}[ ]?\d{0,4}\b",
+        "risk": "High"
+    },
+    "Date of Birth": {
+        "pattern": r"\b(?:DOB|Date of Birth|Birth Date)[:\s]+(?:\d{1,2}[-/]\d{1,2}[-/]\d{2,4})",
+        "risk": "High"
+    },
+    "MAC Address": {
+        "pattern": r"\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b",
+        "risk": "Medium"
+    },
     "IPv4 Address": {
         "pattern": r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
         "risk": "Medium"
@@ -46,20 +62,49 @@ PII_RISK_PATTERNS = {
 
 # Compliance Keyword Patterns Dictionary
 COMPLIANCE_KEYWORDS = {
-    "Data Rights": [
+    "Regulatory Frameworks": [
+        "GDPR",
+        "CCPA"
+    ],
+    "GDPR Compliance": [
         "Right to be Forgotten",
-        "Right to Access",
         "Right to Rectification",
-        "Right to Opt-Out",
-        "Data Portability",
         "Data Subject Request",
-        "DSAR"
+        "DSAR",
+        "Lawful Basis",
+        "Legitimate Interest",
+        "Data Protection Officer",
+        "DPO",
+        "Controller",
+        "Processor",
+        "Joint Controller",
+        "Privacy by Design",
+        "Privacy by Default",
+        "Data Protection Impact Assessment",
+        "DPIA",
+        "Supervisory Authority",
+        "Consent Withdrawal",
+        "Profiling",
+        "Automated Decision-Making"
+    ],
+    "CCPA Compliance": [
+        "Right to Opt-Out",
+        "Do Not Sell My Personal Information",
+        "California Consumer Privacy Act",
+        "Sale of Personal Information",
+        "Consumer Request",
+        "Authorized Agent",
+        "Financial Incentive",
+        "Notice at Collection",
+        "Categories of Personal Information"
+    ],
+    "Data Rights (General)": [
+        "Right to Access",
+        "Data Portability"
     ],
     "Policy/Consent": [
         "Cookie Policy",
         "Privacy Notice",
-        "Lawful Basis",
-        "Legitimate Interest",
         "Explicit Consent",
         "Data Processing Agreement",
         "DPA"
@@ -71,6 +116,12 @@ COMPLIANCE_KEYWORDS = {
         "Security Measures",
         "Encryption",
         "Anonymization"
+    ],
+    "Compliance Timeframes": [
+        "within 72 hours",
+        "72 hours",
+        "30 days",
+        "within 30 days"
     ]
 }
 
@@ -211,6 +262,104 @@ def scan():
                     "matched_text": match.group()
                 })
     
+    # Calculate Risk Severity and Critical Patterns
+    critical_alerts = []
+    pii_type_counts = {}
+    
+    # Count each PII type
+    for finding in risk_findings:
+        pii_type = finding["type"]
+        pii_type_counts[pii_type] = pii_type_counts.get(pii_type, 0) + 1
+    
+    # Detect critical patterns
+    has_ssn = "US Social Security Number (SSN)" in pii_type_counts
+    has_cc = "Credit Card (VISA/Mastercard)" in pii_type_counts
+    has_email = "Email Address" in pii_type_counts
+    has_passport = "Passport Number" in pii_type_counts
+    has_iban = "IBAN (Bank Account)" in pii_type_counts
+    has_dob = "Date of Birth" in pii_type_counts
+    
+    # Identity Theft Risk (SSN + Credit Card)
+    if has_ssn and has_cc:
+        critical_alerts.append({
+            "icon": "fa-skull-crossbones",
+            "title": "Identity Theft Risk",
+            "description": f"Found SSN ({pii_type_counts.get('US Social Security Number (SSN)', 0)}) and Credit Card ({pii_type_counts.get('Credit Card (VISA/Mastercard)', 0)}) - Complete identity profile exposed",
+            "severity": "critical"
+        })
+    
+    # Financial Fraud Risk (Credit Card + Email or IBAN + Email)
+    if (has_cc or has_iban) and has_email:
+        financial_items = []
+        if has_cc:
+            financial_items.append(f"Credit Cards ({pii_type_counts.get('Credit Card (VISA/Mastercard)', 0)})")
+        if has_iban:
+            financial_items.append(f"Bank Accounts ({pii_type_counts.get('IBAN (Bank Account)', 0)})")
+        critical_alerts.append({
+            "icon": "fa-credit-card",
+            "title": "Financial Fraud Risk",
+            "description": f"Found {', '.join(financial_items)} with Email ({pii_type_counts.get('Email Address', 0)}) - Financial fraud potential",
+            "severity": "critical"
+        })
+    
+    # Full Identity Profile Risk (SSN/Passport + DOB + Email)
+    if (has_ssn or has_passport) and has_dob and has_email:
+        critical_alerts.append({
+            "icon": "fa-user-secret",
+            "title": "Full Identity Profile",
+            "description": "Found combination of SSN/Passport, Date of Birth, and Email - Complete identity exposure",
+            "severity": "critical"
+        })
+    
+    # Mass Data Exposure
+    total_pii = len(risk_findings)
+    if total_pii >= 50:
+        critical_alerts.append({
+            "icon": "fa-database",
+            "title": "Mass Data Exposure",
+            "description": f"Found {total_pii} PII items - Large-scale data exposure risk",
+            "severity": "critical"
+        })
+    elif total_pii >= 20:
+        critical_alerts.append({
+            "icon": "fa-exclamation-triangle",
+            "title": "High Volume Data Exposure",
+            "description": f"Found {total_pii} PII items - Significant data exposure",
+            "severity": "warning"
+        })
+    
+    # Assign severity status to each finding based on critical patterns
+    for finding in risk_findings:
+        finding_type = finding["type"]
+        
+        # Critical if part of identity theft combo
+        if finding_type in ["US Social Security Number (SSN)", "Credit Card (VISA/Mastercard)"] and has_ssn and has_cc:
+            finding["severity"] = "Critical"
+            finding["severity_icon"] = "fa-circle-xmark"
+            finding["severity_class"] = "critical"
+        # Critical if financial data with contact info
+        elif finding_type in ["Credit Card (VISA/Mastercard)", "IBAN (Bank Account)"] and has_email:
+            finding["severity"] = "Critical"
+            finding["severity_icon"] = "fa-circle-xmark"
+            finding["severity_class"] = "critical"
+        # High risk by default (already high risk items)
+        elif finding["risk_level"] == "High":
+            finding["severity"] = "High"
+            finding["severity_icon"] = "fa-circle-exclamation"
+            finding["severity_class"] = "high"
+        # Medium risk
+        else:
+            finding["severity"] = "Medium"
+            finding["severity_icon"] = "fa-circle-info"
+            finding["severity_class"] = "medium"
+    
+    # Count severity levels
+    severity_counts = {
+        "critical": sum(1 for f in risk_findings if f.get("severity") == "Critical"),
+        "high": sum(1 for f in risk_findings if f.get("severity") == "High"),
+        "medium": sum(1 for f in risk_findings if f.get("severity") == "Medium")
+    }
+    
     # Compliance Keyword Status
     compliance_status = []
     
@@ -238,7 +387,10 @@ def scan():
     return render_template("report.html", 
                          risk_findings=risk_findings, 
                          compliance_status=compliance_status,
-                         total_risks=len(risk_findings))
+                         total_risks=len(risk_findings),
+                         critical_alerts=critical_alerts,
+                         severity_counts=severity_counts,
+                         pii_type_counts=pii_type_counts)
 
 
 @app.errorhandler(413)

@@ -31,7 +31,40 @@
                     <p class="summary-number">{{ compliance_status|length }}</p>
                     <p class="summary-label">categories scanned</p>
                 </div>
+                
+                {% if severity_counts %}
+                <div class="summary-card severity-card critical-card">
+                    <h3><i class="fas fa-circle-xmark"></i> Critical Risk</h3>
+                    <p class="summary-number">{{ severity_counts.critical }}</p>
+                    <p class="summary-label">critical items</p>
+                </div>
+                
+                <div class="summary-card severity-card high-card">
+                    <h3><i class="fas fa-circle-exclamation"></i> High Risk</h3>
+                    <p class="summary-number">{{ severity_counts.high }}</p>
+                    <p class="summary-label">high risk items</p>
+                </div>
+                {% endif %}
             </div>
+            
+            {% if critical_alerts %}
+            <section class="critical-alerts-section">
+                <h2><i class="fas fa-siren-on"></i> Critical Risk Alerts</h2>
+                <div class="alerts-grid">
+                    {% for alert in critical_alerts %}
+                    <div class="alert-card alert-{{ alert.severity }}">
+                        <div class="alert-icon">
+                            <i class="fas {{ alert.icon }}"></i>
+                        </div>
+                        <div class="alert-content">
+                            <h3>{{ alert.title }}</h3>
+                            <p>{{ alert.description }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
             
             <section class="results-section risk-section">
                 <h2><i class="fas fa-times-circle"></i> Section 1: PII Risk Findings</h2>
@@ -42,6 +75,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Severity</th>
                                 <th>Risk Level</th>
                                 <th>PII Type</th>
                                 <th>Line Number</th>
@@ -51,8 +85,13 @@
                         </thead>
                         <tbody>
                             {% for finding in risk_findings %}
-                            <tr class="risk-{{ finding.risk_level|lower }}">
+                            <tr class="risk-{{ finding.severity_class }}">
                                 <td>{{ loop.index }}</td>
+                                <td>
+                                    <span class="severity-icon severity-{{ finding.severity_class }}">
+                                        <i class="fas {{ finding.severity_icon }}"></i>
+                                    </span>
+                                </td>
                                 <td>
                                     <span class="badge badge-{{ finding.risk_level|lower }}">
                                         {{ finding.risk_level }}
