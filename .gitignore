@@ -8,6 +8,7 @@ __pycache__/
 # Virtual Environment
 venv/
 .venv/
+.venv-1/
 env/
 ENV/
 
@@ -28,3 +29,7 @@ instance/
 
 # Logs
 *.log
+
+# Uploads (sensitive user data)
+uploads/*
+!uploads/.gitkeep
