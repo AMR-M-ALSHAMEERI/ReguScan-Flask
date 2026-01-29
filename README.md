@@ -1,5 +1,10 @@
 # ReguScan-Flask
 
+![Flask](https://img.shields.io/badge/Flask-3.0.0-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Koyeb](https://img.shields.io/badge/Deployed_on-Koyeb-121212?style=for-the-badge&logo=koyeb&logoColor=white)
+
 **Automated GDPR/CCPA Compliance Scanning and Reporting Tool**
 
 A simple yet powerful web application built with Flask that scans text documents for Personally Identifiable Information (PII) and compliance keywords related to GDPR and CCPA regulations.
